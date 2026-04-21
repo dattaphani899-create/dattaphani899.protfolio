@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Phani Datta — Senior QA Engineer preventing EV charging failures across hardware, firmware, and cloud systems at scale. OCPP · ISO 15118 · HIL/SIL · Python Automation.">
+<title>Phani Datta · Senior QA Engineer · EV Charging Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ─── DESIGN TOKENS ─── */
+:root{
+  --void:#07090C;
+  --raised:#0D1117;
+  --surface:#131920;
+  --overlay:#19212B;
+  --rim:rgba(255,255,255,0.06);
+  --rim-h:rgba(255,255,255,0.11);
+  --t1:#EDF2F7;
+  --t2:#7A8FA0;
+  --t3:#415060;
+  --cyan:#14BED4;
+  --cyan-d:rgba(20,190,212,0.08);
+  --em:#00C47A;
+  --em-d:rgba(0,196,122,0.08);
+  --am:#F59E0B;
+  --am-d:rgba(245,158,11,0.08);
+  --serif:'Instrument Serif',Georgia,serif;
+  --sans:'Geist',system-ui,sans-serif;
+  --mono:'Geist Mono','Menlo',monospace;
+  --nav-h:60px;
+  --max:1100px;
+  --g:clamp(20px,5vw,60px);
+  --ease:cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ─── BASE ─── */
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 12px)}
+body{background:var(--void);color:var(--t1);font-family:var(--sans);font-size:16px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:rgba(20,190,212,0.18);color:var(--t1)}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--overlay);border-radius:3px}
+
+/* ─── AMBIENT (very subtle, no performance impact) ─── */
+.amb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(120px)}
+.amb-1{width:500px;height:500px;background:radial-gradient(circle,rgba(20,190,212,0.03) 0%,transparent 70%);top:-120px;right:-100px}
+.amb-2{width:400px;height:400px;background:radial-gradient(circle,rgba(0,196,122,0.02) 0%,transparent 70%);bottom:15%;left:-100px}
+
+/* ─── NAV ─── */
+.nav{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);z-index:900;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--g);max-width:calc(var(--max) + var(--g)*2);margin:0 auto;
+}
+.nav::before{
+  content:'';position:absolute;inset:0;background:rgba(7,9,12,0.88);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--rim);z-index:-1;
+}
+.nav-logo{font-family:var(--serif);font-size:1.1rem;font-style:italic;color:var(--t1);text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:30px}
+.nav-link{font-size:0.81rem;color:var(--t2);text-decoration:none;transition:color 160ms}
+.nav-link:hover{color:var(--t1)}
+.nav-cta{font-family:var(--mono);font-size:0.7rem;letter-spacing:0.05em;color:var(--t1);text-decoration:none;border:1px solid var(--rim-h);padding:7px 16px;border-radius:100px;transition:all 160ms;white-space:nowrap}
+.nav-cta:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-d)}
+
+/* ─── LAYOUT ─── */
+.wrap{max-width:var(--max);margin:0 auto;padding:0 var(--g);position:relative;z-index:1}
+.section{padding:clamp(64px,9vw,120px) 0}
+.divider{height:1px;background:var(--rim);position:relative;z-index:1}
+
+/* ─── TYPE ─── */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--cyan);margin-bottom:16px}
+.eyebrow::before{content:'';width:16px;height:1px;background:var(--cyan);flex-shrink:0}
+.h2{font-family:var(--serif);font-size:clamp(1.9rem,3.2vw,2.8rem);font-weight:400;letter-spacing:-0.025em;line-height:1.1;color:var(--t1)}
+.h2 em{font-style:italic;color:var(--t2)}
+.mono-sm{font-family:var(--mono);font-size:0.7rem;color:var(--t3);letter-spacing:0.04em}
+
+/* ─── BUTTONS ─── */
+.btn{display:inline-flex;align-items:center;gap:8px;font-size:0.83rem;font-weight:500;text-decoration:none;border-radius:100px;padding:11px 22px;transition:all 160ms var(--ease);white-space:nowrap}
+.btn-p{background:var(--t1);color:var(--void)}
+.btn-p:hover{background:#fff;transform:translateY(-1px);box-shadow:0 6px 24px rgba(237,242,247,0.1)}
+.btn-g{background:transparent;color:var(--t2);border:1px solid var(--rim-h)}
+.btn-g:hover{color:var(--t1);background:var(--raised);transform:translateY(-1px)}
+.btn-link{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:0.7rem;letter-spacing:0.06em;text-transform:uppercase;color:var(--cyan);text-decoration:none;border-bottom:1px solid rgba(20,190,212,0.25);padding:5px 0;transition:border-color 160ms}
+.btn-link:hover{border-color:var(--cyan)}
+
+/* ════════════════════════════════════
+   HERO
+════════════════════════════════════ */
+.hero{min-height:100svh;display:flex;align-items:center;padding-top:var(--nav-h);position:relative}
+.hero-inner{max-width:var(--max);width:100%;padding:0 var(--g);display:grid;grid-template-columns:1fr 390px;gap:60px;align-items:center}
+
+/* status pill */
+.hero-pill{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.66rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--em);margin-bottom:24px}
+.hero-pill-dot{width:6px;height:6px;background:var(--em);border-radius:50%;position:relative;flex-shrink:0}
+.hero-pill-dot::after{content:'';position:absolute;inset:-3px;border-radius:50%;background:var(--em);opacity:0.3;animation:ping 2s ease-in-out infinite}
+@keyframes ping{0%,100%{transform:scale(1);opacity:0.3}50%{transform:scale(2.2);opacity:0}}
+
+/* headline */
+.hero-hook{font-family:var(--serif);font-size:clamp(2.5rem,5vw,4.2rem);font-weight:400;letter-spacing:-0.035em;line-height:0.97;color:var(--t1);margin-bottom:16px}
+.hero-hook em{font-style:italic;color:var(--cyan)}
+
+/* ONE-LINE VALUE PROP — new */
+.hero-prop{font-size:0.95rem;color:var(--t2);font-weight:300;line-height:1.6;margin-bottom:20px;max-width:480px;border-left:2px solid var(--cyan);padding-left:14px}
+.hero-prop strong{color:var(--t1);font-weight:500}
+
+.hero-sub{font-size:0.95rem;color:var(--t2);line-height:1.75;font-weight:300;margin-bottom:32px;max-width:460px}
+.hero-sub strong{color:var(--t1);font-weight:500}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap}
+
+/* quick scan card */
+.qscan{background:var(--raised);border:1px solid var(--rim);border-radius:14px;overflow:hidden}
+.qscan-head{padding:14px 18px;border-bottom:1px solid var(--rim);display:flex;align-items:center;gap:8px}
+.qscan-dot{width:6px;height:6px;border-radius:50%;background:var(--em);animation:ping 2s ease-in-out infinite}
+.qscan-title{font-family:var(--mono);font-size:0.63rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3)}
+.qscan-row{display:flex;align-items:flex-start;gap:12px;padding:13px 18px;border-bottom:1px solid var(--rim);transition:background 150ms}
+.qscan-row:last-child{border-bottom:none}
+.qscan-row:hover{background:var(--surface)}
+.qscan-icon{font-size:0.88rem;flex-shrink:0;margin-top:1px}
+.qscan-label{font-size:0.83rem;font-weight:500;color:var(--t1);line-height:1.3;margin-bottom:2px}
+.qscan-meta{font-family:var(--mono);font-size:0.64rem;color:var(--t3);letter-spacing:0.02em}
+
+/* scroll hint */
+.hero-scroll{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:fadein 1s var(--ease) 2s forwards}
+.scroll-track{width:1px;height:36px;background:var(--rim);overflow:hidden}
+.scroll-fill{height:50%;background:linear-gradient(to bottom,var(--cyan),transparent);animation:scrollpulse 2s var(--ease) infinite}
+@keyframes scrollpulse{0%{transform:translateY(-100%)}100%{transform:translateY(200%)}}
+.scroll-lbl{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3)}
+
+/* ════════════════════════════════════
+   IMPACT AT SCALE STRIP
+════════════════════════════════════ */
+.impact-strip{position:relative;z-index:1;background:var(--raised);border-top:1px solid var(--rim);border-bottom:1px solid var(--rim)}
+.impact-strip-inner{max-width:var(--max);margin:0 auto;padding:0 var(--g)}
+
+/* header row */
+.impact-header{padding:20px 0 0;display:flex;align-items:center;gap:12px}
+.impact-header-label{font-family:var(--mono);font-size:0.66rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3)}
+.impact-header-rule{flex:1;height:1px;background:var(--rim)}
+
+/* metrics row */
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr)}
+.metric{padding:24px 20px;border-right:1px solid var(--rim);transition:background 160ms;position:relative}
+.metric:last-child{border-right:none}
+.metric:hover{background:var(--surface)}
+.metric-num{font-family:var(--serif);font-size:2.2rem;font-weight:400;letter-spacing:-0.04em;line-height:1;margin-bottom:4px;color:var(--t1)}
+.metric-num.c{color:var(--cyan)}
+.metric-num.e{color:var(--em)}
+.metric-num.a{color:var(--am)}
+.metric-label{font-size:0.84rem;font-weight:500;color:var(--t1);margin-bottom:3px}
+/* ENHANCED: metric meaning — shows business consequence */
+.metric-meaning{font-family:var(--mono);font-size:0.64rem;color:var(--em);letter-spacing:0.01em;line-height:1.4;margin-bottom:4px;font-style:italic}
+.metric-desc{font-family:var(--mono);font-size:0.63rem;color:var(--t3);letter-spacing:0.01em;line-height:1.45}
+
+/* "Impact at scale" inline callout */
+.impact-callout{
+  border-top:1px solid var(--rim);padding:16px 0 20px;
+  display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;
+}
+.impact-callout-label{font-family:var(--mono);font-size:0.63rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--cyan);white-space:nowrap;padding-top:1px}
+.impact-chips{display:flex;flex-wrap:wrap;gap:8px}
+.impact-chip{
+  font-family:var(--mono);font-size:0.67rem;letter-spacing:0.02em;
+  color:var(--t2);background:var(--surface);border:1px solid var(--rim);
+  padding:5px 12px;border-radius:6px;
+}
+.impact-chip strong{color:var(--t1);font-weight:500}
+
+/* ════════════════════════════════════
+   MARQUEE
+════════════════════════════════════ */
+.mq{position:relative;z-index:1;border-top:1px solid var(--rim);border-bottom:1px solid var(--rim);background:var(--raised);overflow:hidden;padding:13px 0}
+.mq-inner{display:flex;width:max-content;animation:mq 36s linear infinite}
+.mq-group{display:flex;align-items:center}
+.mq-item{font-family:var(--mono);font-size:0.67rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);padding:0 26px;white-space:nowrap}
+.mq-sep{color:var(--cyan);font-size:0.45rem}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ════════════════════════════════════
+   DIFFERENTIATOR
+════════════════════════════════════ */
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;border:1px solid var(--rim);border-radius:14px;overflow:hidden;background:var(--rim)}
+.diff-card{background:var(--raised);padding:28px;transition:background 160ms}
+.diff-card:hover{background:var(--surface)}
+.diff-icon{font-size:1.4rem;margin-bottom:12px}
+.diff-title{font-family:var(--serif);font-size:1.1rem;font-weight:400;letter-spacing:-0.01em;color:var(--t1);margin-bottom:7px}
+.diff-body{font-size:0.86rem;color:var(--t2);line-height:1.68;font-weight:300}
+
+/* ════════════════════════════════════
+   PROJECTS
+════════════════════════════════════ */
+.proj-list{display:flex;flex-direction:column;gap:2px;border:1px solid var(--rim);border-radius:14px;overflow:hidden;background:var(--rim)}
+.proj{background:var(--raised);overflow:hidden;transition:background 280ms var(--ease)}
+.proj:hover{background:var(--surface)}
+
+/* header */
+.proj-header{display:grid;grid-template-columns:48px 1fr auto;gap:18px;align-items:center;padding:24px 28px;cursor:pointer}
+.proj-num{font-family:var(--serif);font-size:1.7rem;font-style:italic;color:var(--t3);line-height:1;transition:color 180ms}
+.proj:hover .proj-num,.proj.open .proj-num{color:var(--cyan)}
+.proj-headline-row{display:flex;align-items:center;gap:9px;margin-bottom:3px;flex-wrap:wrap}
+.proj-name{font-family:var(--serif);font-size:1.15rem;font-weight:400;letter-spacing:-0.01em;color:var(--t1);line-height:1.2}
+.badge{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.07em;text-transform:uppercase;padding:3px 8px;border-radius:100px;border:1px solid;white-space:nowrap}
+.bc{color:var(--cyan);border-color:rgba(20,190,212,0.3);background:var(--cyan-d)}
+.be{color:var(--em);border-color:rgba(0,196,122,0.3);background:var(--em-d)}
+.ba{color:var(--am);border-color:rgba(245,158,11,0.3);background:var(--am-d)}
+
+/* KEY IMPACT bullets — new, always visible */
+.proj-key-impact{
+  display:flex;flex-wrap:wrap;gap:6px;margin-bottom:5px;
+}
+.proj-ki{
+  font-family:var(--mono);font-size:0.62rem;letter-spacing:0.02em;
+  color:var(--em);background:var(--em-d);border:1px solid rgba(0,196,122,0.18);
+  padding:3px 9px;border-radius:5px;white-space:nowrap;
+}
+
+.proj-biz{font-size:0.82rem;color:var(--t2);font-weight:300;font-style:italic;margin-bottom:4px}
+.proj-meta{font-family:var(--mono);font-size:0.66rem;color:var(--t3);letter-spacing:0.02em}
+.proj-toggle{width:28px;height:28px;border:1px solid var(--rim-h);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:0.78rem;transition:all 280ms var(--ease);flex-shrink:0}
+.proj.open .proj-toggle{background:var(--cyan-d);border-color:rgba(20,190,212,0.3);color:var(--cyan);transform:rotate(45deg)}
+
+/* accordion */
+.proj-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows 480ms var(--ease)}
+.proj.open .proj-body{grid-template-rows:1fr}
+.proj-body-inner{overflow:hidden}
+.proj-content{border-top:1px solid var(--rim);padding:24px 28px;display:grid;grid-template-columns:1fr 1fr;gap:20px 36px}
+
+.cl{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--cyan);margin-bottom:7px}
+.ct{font-size:0.87rem;color:var(--t2);line-height:1.7;font-weight:300}
+.ct strong{color:var(--t1);font-weight:500}
+.ct ul{padding-left:14px;display:flex;flex-direction:column;gap:3px;list-style:disc}
+.ct ul li{color:var(--t2);font-size:0.87rem}
+
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{font-family:var(--mono);font-size:0.63rem;color:var(--t3);background:var(--surface);border:1px solid var(--rim);padding:3px 9px;border-radius:5px;transition:all 160ms}
+.proj.open .chip{border-color:var(--rim-h);color:var(--t2)}
+
+.impact-box{grid-column:1/-1;background:var(--surface);border:1px solid var(--rim);border-radius:9px;padding:14px 18px;display:flex;align-items:flex-start;gap:10px}
+.impact-arrow{color:var(--em);font-weight:600;flex-shrink:0;margin-top:1px;font-size:0.9rem}
+.impact-body{font-size:0.87rem;color:var(--t1);line-height:1.55}
+.impact-body strong{color:var(--em)}
+.proj-links{grid-column:1/-1;display:flex;gap:18px;padding-top:2px}
+
+/* ════════════════════════════════════
+   RETOOL / INTERNAL TOOLS SECTION
+════════════════════════════════════ */
+.tools-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;border:1px solid var(--rim);border-radius:14px;overflow:hidden;background:var(--rim)}
+.tool-card{background:var(--raised);padding:24px;transition:background 160ms}
+.tool-card:hover{background:var(--surface)}
+.tool-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.tool-icon{font-size:1.3rem}
+.tool-badge{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.07em;text-transform:uppercase;padding:3px 8px;border-radius:5px;color:var(--cyan);background:var(--cyan-d);border:1px solid rgba(20,190,212,0.2)}
+.tool-title{font-family:var(--serif);font-size:1rem;font-weight:400;letter-spacing:-0.01em;color:var(--t1);margin-bottom:6px;line-height:1.2}
+.tool-body{font-size:0.84rem;color:var(--t2);line-height:1.65;font-weight:300;margin-bottom:14px}
+.tool-chips{display:flex;flex-wrap:wrap;gap:5px}
+.tool-chip{font-family:var(--mono);font-size:0.61rem;color:var(--t3);background:var(--surface);border:1px solid var(--rim);padding:3px 8px;border-radius:5px}
+.tool-impact{
+  margin-top:12px;padding-top:12px;border-top:1px solid var(--rim);
+  font-family:var(--mono);font-size:0.65rem;color:var(--em);letter-spacing:0.01em;
+}
+
+/* ════════════════════════════════════
+   SKILLS
+════════════════════════════════════ */
+.skills-wrap{display:grid;grid-template-columns:230px 1fr;gap:2px;border:1px solid var(--rim);border-radius:14px;overflow:hidden;background:var(--rim)}
+.skills-nav{background:var(--raised);display:flex;flex-direction:column}
+.sk-tab{padding:17px 20px;cursor:pointer;border-bottom:1px solid var(--rim);transition:all 160ms;display:flex;align-items:center;gap:10px}
+.sk-tab:last-child{border-bottom:none}
+.sk-tab:hover{background:var(--surface)}
+.sk-tab.active{background:var(--surface);border-left:2px solid var(--cyan)}
+.sk-tab-icon{font-size:0.9rem;opacity:0.7}
+.sk-tab-lbl{font-size:0.82rem;color:var(--t2);transition:color 160ms}
+.sk-tab.active .sk-tab-lbl{color:var(--t1)}
+.skills-panel{background:var(--raised);padding:32px}
+.sk-pane{display:none;animation:fadein 220ms var(--ease)}
+.sk-pane.active{display:block}
+.sk-pane-title{font-family:var(--serif);font-size:1.25rem;font-weight:400;letter-spacing:-0.02em;color:var(--t1);margin-bottom:5px}
+.sk-pane-desc{font-size:0.84rem;color:var(--t3);font-weight:300;line-height:1.55;margin-bottom:20px}
+.sk-grid{display:flex;flex-wrap:wrap;gap:6px}
+.sk{font-family:var(--mono);font-size:0.72rem;color:var(--t2);background:var(--surface);border:1px solid var(--rim);padding:6px 12px;border-radius:7px;transition:all 160ms}
+.sk:hover{background:var(--overlay);border-color:var(--rim-h);color:var(--t1);transform:translateY(-1px)}
+.sk.core{color:var(--cyan);background:var(--cyan-d);border-color:rgba(20,190,212,0.2)}
+
+/* ════════════════════════════════════
+   EXPERIENCE
+════════════════════════════════════ */
+.exp-list{display:flex;flex-direction:column;gap:2px;border:1px solid var(--rim);border-radius:14px;overflow:hidden;background:var(--rim)}
+.exp-card{background:var(--raised);padding:32px;transition:background 160ms}
+.exp-card:hover{background:var(--surface)}
+.exp-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;gap:20px;flex-wrap:wrap}
+.exp-co{font-family:var(--serif);font-size:1.3rem;font-weight:400;letter-spacing:-0.02em;color:var(--t1);line-height:1;margin-bottom:4px}
+.exp-role{font-family:var(--mono);font-size:0.68rem;letter-spacing:0.07em;color:var(--cyan);text-transform:uppercase}
+.exp-period{font-family:var(--mono);font-size:0.65rem;letter-spacing:0.06em;color:var(--t3);text-transform:uppercase;text-align:right;line-height:1.6}
+.exp-buls{list-style:none;display:flex;flex-direction:column;gap:8px}
+.exp-buls li{font-size:0.87rem;color:var(--t2);line-height:1.68;font-weight:300;padding-left:16px;position:relative}
+.exp-buls li::before{content:'—';position:absolute;left:0;color:var(--t3);font-size:0.72rem}
+.exp-buls strong{color:var(--t1);font-weight:500}
+
+/* ════════════════════════════════════
+   CONTACT
+════════════════════════════════════ */
+.contact-wrap{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.contact-h{font-family:var(--serif);font-size:clamp(1.9rem,3.2vw,2.8rem);font-weight:400;letter-spacing:-0.03em;line-height:1.1;color:var(--t1);margin-bottom:16px}
+.contact-h em{font-style:italic;color:var(--t2)}
+.contact-body{font-size:0.91rem;color:var(--t2);line-height:1.78;font-weight:300;margin-bottom:28px}
+.clinks{border:1px solid var(--rim);border-radius:12px;overflow:hidden}
+.clink{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--rim);text-decoration:none;transition:all 160ms;background:var(--raised);gap:12px}
+.clink:last-child{border-bottom:none}
+.clink:hover{background:var(--surface);padding-left:26px}
+.clink-l{display:flex;align-items:center;gap:11px}
+.clink-ico{width:34px;height:34px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid var(--rim);flex-shrink:0;transition:all 160ms;font-size:0.9rem}
+.clink:hover .clink-ico{background:var(--cyan-d);border-color:rgba(20,190,212,0.25)}
+.clink-name{font-weight:500;font-size:0.86rem;color:var(--t1);margin-bottom:2px}
+.clink-val{font-family:var(--mono);font-size:0.65rem;color:var(--t3)}
+.clink-arr{color:var(--t3);font-size:0.78rem;transition:all 160ms}
+.clink:hover .clink-arr{color:var(--cyan);transform:translateX(3px)}
+
+/* ─── FOOTER ─── */
+.footer{border-top:1px solid var(--rim);padding:24px var(--g);position:relative;z-index:1}
+.footer-inner{max-width:var(--max);margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.anim{opacity:0;transform:translateY(20px);transition:opacity 560ms var(--ease),transform 560ms var(--ease)}
+.anim.in{opacity:1;transform:translateY(0)}
+.d1{transition-delay:55ms!important}.d2{transition-delay:115ms!important}.d3{transition-delay:180ms!important}.d4{transition-delay:250ms!important}
+
+.ha{opacity:0}
+.ha1{animation:fadeup 0.72s var(--ease) 0.05s forwards}
+.ha2{animation:fadeup 0.72s var(--ease) 0.16s forwards}
+.ha3{animation:fadeup 0.72s var(--ease) 0.27s forwards}
+.ha4{animation:fadeup 0.72s var(--ease) 0.37s forwards}
+.ha5{animation:fadeup 0.72s var(--ease) 0.47s forwards}
+.ha6{animation:fadeup 0.72s var(--ease) 0.56s forwards}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:940px){
+  .hero-inner{grid-template-columns:1fr;gap:36px}
+  .metrics-row{grid-template-columns:1fr 1fr}
+  .metric{border-right:none;border-bottom:1px solid var(--rim)}
+  .metric:nth-child(odd){border-right:1px solid var(--rim)}
+  .metric:nth-last-child(-n+2){border-bottom:none}
+  .tools-grid{grid-template-columns:1fr}
+  .diff-grid{grid-template-columns:1fr}
+  .contact-wrap{grid-template-columns:1fr;gap:40px}
+  .skills-wrap{grid-template-columns:1fr}
+  .skills-nav{flex-direction:row;overflow-x:auto}
+  .sk-tab{flex-shrink:0;border-bottom:none;border-right:1px solid var(--rim)}
+  .sk-tab.active{border-left:none;border-bottom:2px solid var(--cyan)}
+  .proj-content{grid-template-columns:1fr}
+  .proj-header{grid-template-columns:40px 1fr auto;gap:14px;padding:20px 22px}
+  .proj-content{padding:20px 22px}
+  .impact-box{grid-column:auto}
+  .proj-links{grid-column:auto}
+}
+@media(max-width:600px){
+  :root{--g:16px}
+  .nav-links{display:none}
+  .metrics-row{grid-template-columns:1fr}
+  .metric:nth-child(odd){border-right:none}
+  .metric{border-bottom:1px solid var(--rim)}
+  .metric:last-child{border-bottom:none}
+  .exp-top{flex-direction:column}
+  .exp-period{text-align:left}
+  .footer-inner{flex-direction:column;text-align:center;gap:6px}
+  .impact-callout{flex-direction:column;gap:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="amb amb-1"></div>
+<div class="amb amb-2"></div>
+
+<!-- ══ NAV ══ -->
+<nav class="nav">
+  <a class="nav-logo" href="#">Phani Datta</a>
+  <div class="nav-links">
+    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link" href="#projects">Projects</a>
+    <a class="nav-link" href="#tools">Tools</a>
+    <a class="nav-link" href="#skills">Skills</a>
+    <a class="nav-link" href="#experience">Experience</a>
+    <a class="nav-link" href="#contact">Contact</a>
+  </div>
+  <a class="nav-cta" href="mailto:dattaphani899@gmail.com">Hire Me →</a>
+</nav>
+
+<!-- ══════════════════════════════════════
+     HERO
+══════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-inner">
+
+    <!-- LEFT -->
+    <div>
+      <div class="hero-pill ha ha1">
+        <div class="hero-pill-dot"></div>
+        Open to work · Hartford, CT · Relocatable
+      </div>
+
+      <h1 class="hero-hook ha ha2">
+        I break EV<br>charging systems<br><em>before they do.</em>
+      </h1>
+
+      <!-- ONE-LINE VALUE PROP — new -->
+      <p class="hero-prop ha ha3">
+        Preventing real-world EV charging failures across <strong>hardware, firmware, and cloud systems</strong> at scale — from CAN bus signals to CTEP certification.
+      </p>
+
+      <p class="hero-sub ha ha4">
+        Senior QA Engineer · <strong>5+ years</strong> · AmpUp, Infosys, Sigma.<br>
+        OCPP · ISO 15118 · HIL/SIL · Python Automation · Embedded Firmware.
+      </p>
+
+      <div class="hero-ctas ha ha5">
+        <a class="btn btn-p" href="mailto:dattaphani899@gmail.com">Download Resume ↓</a>
+        <a class="btn btn-g" href="https://www.linkedin.com/in/phanidatta/" target="_blank">LinkedIn ↗</a>
+        <a class="btn btn-g" href="https://github.com/phanidatta673" target="_blank">GitHub ↗</a>
+      </div>
+    </div>
+
+    <!-- RIGHT — quick scan -->
+    <div class="qscan ha ha6">
+      <div class="qscan-head">
+        <div class="qscan-dot"></div>
+        <span class="qscan-title">Profile at a glance</span>
+      </div>
+      <div>
+        <div class="qscan-row">
+          <div class="qscan-icon">⚡</div>
+          <div>
+            <div class="qscan-label">EV Charging Systems</div>
+            <div class="qscan-meta">OCPP 1.6 / 2.0.1 · ISO 15118 · J1772 · CTEP</div>
+          </div>
+        </div>
+        <div class="qscan-row">
+          <div class="qscan-icon">🔬</div>
+          <div>
+            <div class="qscan-label">Hardware + Firmware Validation</div>
+            <div class="qscan-meta">HIL · SIL · CAN Bus · Oscilloscope · DMM</div>
+          </div>
+        </div>
+        <div class="qscan-row">
+          <div class="qscan-icon">☁️</div>
+          <div>
+            <div class="qscan-label">Backend + API Testing</div>
+            <div class="qscan-meta">REST Assured · WebSockets · Webhooks · PostgreSQL</div>
+          </div>
+        </div>
+        <div class="qscan-row">
+          <div class="qscan-icon">📱</div>
+          <div>
+            <div class="qscan-label">Mobile + Web Automation</div>
+            <div class="qscan-meta">Appium · Selenium · Playwright · BrowserStack</div>
+          </div>
+        </div>
+        <div class="qscan-row">
+          <div class="qscan-icon">🤖</div>
+          <div>
+            <div class="qscan-label">Automation Framework Dev</div>
+            <div class="qscan-meta">Python · Pytest · Jenkins · Docker · Allure</div>
+          </div>
+        </div>
+        <div class="qscan-row">
+          <div class="qscan-icon">🛠</div>
+          <div>
+            <div class="qscan-label">Internal Tools & Workflows</div>
+            <div class="qscan-meta">Retool · Shell scripting · CI/CD pipelines</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-track"><div class="scroll-fill"></div></div>
+    <span class="scroll-lbl">scroll</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════
+     IMPACT AT SCALE — new section
+══════════════════════════════════════ -->
+<div class="impact-strip">
+  <div class="impact-strip-inner">
+
+    <div class="impact-header">
+      <span class="impact-header-label">Impact at scale</span>
+      <div class="impact-header-rule"></div>
+    </div>
+
+    <div class="metrics-row">
+      <div class="metric anim">
+        <div class="metric-num c" data-count="5" data-suffix="×">5×</div>
+        <div class="metric-label">Test Throughput</div>
+        <div class="metric-meaning">→ faster release cycles, lower production risk</div>
+        <div class="metric-desc">1 → 5 chargers validated simultaneously via HIL automation</div>
+      </div>
+      <div class="metric anim d1">
+        <div class="metric-num e" data-count="50" data-suffix="%">50%</div>
+        <div class="metric-label">Faster Validation</div>
+        <div class="metric-meaning">→ engineers unblocked, sprints ship on time</div>
+        <div class="metric-desc">Manual 2-week regression → 3-day automated pipeline</div>
+      </div>
+      <div class="metric anim d2">
+        <div class="metric-num a">11→0</div>
+        <div class="metric-label">Compliance Failures</div>
+        <div class="metric-meaning">→ California market access unblocked in 14 days</div>
+        <div class="metric-desc">CTEP non-conformances resolved, certification passed</div>
+      </div>
+      <div class="metric anim d3">
+        <div class="metric-num c">7</div>
+        <div class="metric-label">Critical Bugs Found</div>
+        <div class="metric-meaning">→ zero field incidents from these firmware defects</div>
+        <div class="metric-desc">Pre-production firmware bugs via fault injection testing</div>
+      </div>
+    </div>
+
+    <!-- "Impact at scale" callout chips -->
+    <div class="impact-callout anim">
+      <span class="impact-callout-label">Also:</span>
+      <div class="impact-chips">
+        <span class="impact-chip"><strong>95%</strong> UAT sign-off rate across all sprints</span>
+        <span class="impact-chip"><strong>40+</strong> fault scenarios validated (network + power)</span>
+        <span class="impact-chip"><strong>200+</strong> protocol sequences per nightly CI run</span>
+        <span class="impact-chip"><strong>500+</strong> OCPP transaction sequences replayed under stress</span>
+        <span class="impact-chip"><strong>3 OEM</strong> integrations — billing gap rate → zero</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MARQUEE -->
+<div class="mq">
+  <div class="mq-inner">
+    <div class="mq-group">
+      <span class="mq-item">OCPP 1.6</span><span class="mq-sep">·</span><span class="mq-item">OCPP 2.0.1</span><span class="mq-sep">·</span><span class="mq-item">ISO 15118</span><span class="mq-sep">·</span><span class="mq-item">J1772</span><span class="mq-sep">·</span><span class="mq-item">CTEP Compliance</span><span class="mq-sep">·</span><span class="mq-item">CAN Bus Analysis</span><span class="mq-sep">·</span><span class="mq-item">HIL Testing</span><span class="mq-sep">·</span><span class="mq-item">SIL Testing</span><span class="mq-sep">·</span><span class="mq-item">Python · Pytest</span><span class="mq-sep">·</span><span class="mq-item">Selenium · Appium</span><span class="mq-sep">·</span><span class="mq-item">REST Assured</span><span class="mq-sep">·</span><span class="mq-item">Jenkins · Docker</span><span class="mq-sep">·</span><span class="mq-item">Oscilloscope · DMM</span><span class="mq-sep">·</span><span class="mq-item">Embedded Firmware</span><span class="mq-sep">·</span><span class="mq-item">DIN 70121</span><span class="mq-sep">·</span><span class="mq-item">Retool</span><span class="mq-sep">·</span>
+    </div>
+    <div class="mq-group" aria-hidden="true">
+      <span class="mq-item">OCPP 1.6</span><span class="mq-sep">·</span><span class="mq-item">OCPP 2.0.1</span><span class="mq-sep">·</span><span class="mq-item">ISO 15118</span><span class="mq-sep">·</span><span class="mq-item">J1772</span><span class="mq-sep">·</span><span class="mq-item">CTEP Compliance</span><span class="mq-sep">·</span><span class="mq-item">CAN Bus Analysis</span><span class="mq-sep">·</span><span class="mq-item">HIL Testing</span><span class="mq-sep">·</span><span class="mq-item">SIL Testing</span><span class="mq-sep">·</span><span class="mq-item">Python · Pytest</span><span class="mq-sep">·</span><span class="mq-item">Selenium · Appium</span><span class="mq-sep">·</span><span class="mq-item">REST Assured</span><span class="mq-sep">·</span><span class="mq-item">Jenkins · Docker</span><span class="mq-sep">·</span><span class="mq-item">Oscilloscope · DMM</span><span class="mq-sep">·</span><span class="mq-item">Embedded Firmware</span><span class="mq-sep">·</span><span class="mq-item">DIN 70121</span><span class="mq-sep">·</span><span class="mq-item">Retool</span><span class="mq-sep">·</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     WHAT MAKES ME DIFFERENT
+══════════════════════════════════════ -->
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="eyebrow anim">What makes me different</div>
+    <h2 class="h2 anim d1" style="margin-bottom:36px">Hardware + Software QA.<br><em>End to end.</em></h2>
+    <div class="diff-grid anim d2">
+      <div class="diff-card">
+        <div class="diff-icon">🔩</div>
+        <div class="diff-title">I work from the wire up</div>
+        <div class="diff-body">Most QA engineers start at the API. I start at the CAN bus — probing voltage signals with an oscilloscope and correlating them with a backend billing discrepancy in the same session. That hardware-to-cloud range is rare and makes root-cause cycles compress from days to hours.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">⚡</div>
+        <div class="diff-title">Deep EV protocol expertise</div>
+        <div class="diff-body">Not just test execution — I understand OCPP 1.6, 2.0.1, ISO 15118, and CTEP compliance at a protocol level. I know why a charger fails, which firmware field is non-compliant, and how to produce certifying-body evidence. That depth unlocks faster resolution without external consultants.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">🧠</div>
+        <div class="diff-title">Systems-first debugging mindset</div>
+        <div class="diff-body">Before writing tests, I map the full failure surface: what can hardware do that firmware doesn't expect? Where does the OCPP spec leave room for divergent implementation? That mental model finds the field-critical issues that generic test coverage misses entirely.</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-icon">📐</div>
+        <div class="diff-title">I build infrastructure, not just tests</div>
+        <div class="diff-body">My HIL framework at AmpUp became the team standard. My fault injection matrix became a mandatory certification gate. I build quality infrastructure that compounds over time — other engineers build on it, and the coverage improves with every release.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     PROJECTS
+══════════════════════════════════════ -->
+<section class="section" id="projects">
+  <div class="wrap">
+    <div class="eyebrow anim">Case Studies</div>
+    <h2 class="h2 anim d1" style="margin-bottom:40px">Engineering problems<br><em>I've actually solved</em></h2>
+
+    <div class="proj-list anim d2">
+
+      <!-- ── PROJECT 01 ── -->
+      <div class="proj">
+        <div class="proj-header">
+          <div class="proj-num">01</div>
+          <div>
+            <div class="proj-headline-row">
+              <span class="proj-name">OCPP Billing Validation System</span>
+              <span class="badge bc">OCPP 2.0.1</span>
+            </div>
+            <!-- KEY IMPACT — always visible -->
+            <div class="proj-key-impact">
+              <span class="proj-ki">✓ Billing gap rate → zero</span>
+              <span class="proj-ki">✓ 3 OEM integrations fixed</span>
+              <span class="proj-ki">✓ Root cause in 6 days</span>
+            </div>
+            <div class="proj-biz">💡 Charging sessions failed to generate billing records → revenue lost silently, compliance at risk.</div>
+            <div class="proj-meta">AmpUp · 2024–Present · Protocol + Backend Layer</div>
+          </div>
+          <div class="proj-toggle">+</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-body-inner">
+            <div class="proj-content">
+              <div>
+                <div class="cl">Problem</div>
+                <div class="ct">Sessions closed without valid billing records — intermittent, invisible in staging, consistent in the field during cellular handoffs. <strong>meterValue gaps between StopTransaction payloads and backend records</strong> created unreconciled revenue discrepancies and CTEP compliance exposure.</div>
+              </div>
+              <div>
+                <div class="cl">Approach</div>
+                <div class="ct">
+                  <ul>
+                    <li>Built Python OCPP message interceptor — replayed 500+ transaction sequences</li>
+                    <li>Injected packet loss, session timeouts, reconnection events under degraded network</li>
+                    <li>Correlated charger-side OCPP payloads with PostgreSQL billing records</li>
+                    <li>Surfaced 3 distinct gap patterns across 2 OEM firmware variants</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Stack</div>
+                <div class="chips">
+                  <span class="chip">Python</span><span class="chip">OCPP 1.6/2.0.1</span><span class="chip">REST Assured</span><span class="chip">PostgreSQL</span><span class="chip">Pytest</span><span class="chip">Wireshark</span><span class="chip">WebSockets</span>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Result</div>
+                <div class="ct">Root cause confirmed: non-compliant StopTransaction timing in firmware variant B. Fix deployed in 6 days. Framework adopted as the standard regression suite for all new charger OEM onboarding.</div>
+              </div>
+              <div class="impact-box">
+                <div class="impact-arrow">→</div>
+                <div class="impact-body"><strong>Billing gap rate: zero across all 3 OEM integrations.</strong> Root cause diagnosed via protocol trace in 6 days. Framework now standard for all new charger onboarding.</div>
+              </div>
+              <div class="proj-links">
+                <a class="btn-link" href="https://github.com/phanidatta673/ocpp-billing-validator" target="_blank">View Repo: ocpp-billing-validator →</a>
+                <a class="btn-link" href="https://github.com/phanidatta673/ocpp-billing-validator/blob/main/reports/sample-run.html" target="_blank">View Sample Report →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROJECT 02 ── -->
+      <div class="proj">
+        <div class="proj-header">
+          <div class="proj-num">02</div>
+          <div>
+            <div class="proj-headline-row">
+              <span class="proj-name">EV Charger HIL Automation Framework</span>
+              <span class="badge be">HIL / SIL</span>
+            </div>
+            <div class="proj-key-impact">
+              <span class="proj-ki">✓ 5× throughput gain</span>
+              <span class="proj-ki">✓ 14 days → 3 days cycle</span>
+              <span class="proj-ki">✓ Zero prod regressions</span>
+            </div>
+            <div class="proj-biz">💡 Manual regression took 3 engineers × 2 weeks per firmware release → shipping was slow, coverage was unreliable.</div>
+            <div class="proj-meta">AmpUp · 2024–Present · Embedded + Automation Infrastructure</div>
+          </div>
+          <div class="proj-toggle">+</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-body-inner">
+            <div class="proj-content">
+              <div>
+                <div class="cl">Problem</div>
+                <div class="ct">Manual regression per firmware release: 3–4 engineers, 2 weeks, no repeatability. OCPP 2.0.1 protocol edge cases — smart charging, reservation flows, certificate handling — were routinely missed under time pressure. <strong>No automated signal between firmware commit and production readiness.</strong></div>
+              </div>
+              <div>
+                <div class="cl">Approach</div>
+                <div class="ct">
+                  <ul>
+                    <li>Designed modular Python + Pytest HIL framework with composable charger fixtures</li>
+                    <li>Parallel execution across 5 physical charger stations via pytest-xdist</li>
+                    <li>Allure dashboards with per-run protocol trace artifacts per commit</li>
+                    <li>Jenkins nightly regression — fully unattended, zero manual handoff</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Stack</div>
+                <div class="chips">
+                  <span class="chip">Python</span><span class="chip">Pytest + xdist</span><span class="chip">OCPP 2.0.1</span><span class="chip">HIL/SIL</span><span class="chip">Allure</span><span class="chip">Jenkins</span><span class="chip">Docker</span><span class="chip">CAN Bus</span>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Result</div>
+                <div class="ct">Regression cycle: 14 days → 3 days. 5× parallel charger coverage. 200+ protocol sequences per nightly run. Zero production regressions since deployment. Framework adopted as team-wide standard.</div>
+              </div>
+              <div class="impact-box">
+                <div class="impact-arrow">→</div>
+                <div class="impact-body"><strong>5× throughput. 14-day cycle → 3 days → faster releases, reduced production risk.</strong> Zero regressions shipped since. Team-wide standard.</div>
+              </div>
+              <div class="proj-links">
+                <a class="btn-link" href="https://github.com/phanidatta673/ev-hil-test-framework" target="_blank">View Repo: ev-hil-test-framework →</a>
+                <a class="btn-link" href="https://github.com/phanidatta673/ev-hil-test-framework/tree/main/reports" target="_blank">View Allure Report →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROJECT 03 ── -->
+      <div class="proj">
+        <div class="proj-header">
+          <div class="proj-num">03</div>
+          <div>
+            <div class="proj-headline-row">
+              <span class="proj-name">Network & Power Failure Recovery Suite</span>
+              <span class="badge ba">Fault Injection</span>
+            </div>
+            <div class="proj-key-impact">
+              <span class="proj-ki">✓ 7 firmware bugs found</span>
+              <span class="proj-ki">✓ 0 stuck sessions post-fix</span>
+              <span class="proj-ki">✓ New certification gate</span>
+            </div>
+            <div class="proj-biz">💡 Chargers stuck mid-session during outages → driver abandonment, manual backend state cleanup, support escalations.</div>
+            <div class="proj-meta">AmpUp · 2024 · Resilience Engineering</div>
+          </div>
+          <div class="proj-toggle">+</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-body-inner">
+            <div class="proj-content">
+              <div>
+                <div class="cl">Problem</div>
+                <div class="ct">Field deployments showed chargers stuck in ambiguous session states during Wi-Fi → cellular transitions and power cuts. Sessions abandoned mid-charge created <strong>backend state mismatches requiring manual reconciliation</strong> and driver support tickets at scale.</div>
+              </div>
+              <div>
+                <div class="cl">Approach</div>
+                <div class="ct">
+                  <ul>
+                    <li>40-scenario fault injection matrix: power cut, network drop, reconnect timeout, BMS signal loss</li>
+                    <li>Relay-controlled power supplies + traffic shaping on purpose-built lab bench</li>
+                    <li>Captured StatusNotification payloads, heartbeat recovery timelines, webhook confirmations</li>
+                    <li>Correlated hardware signals (oscilloscope, DMM) with backend transaction logs</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Stack</div>
+                <div class="chips">
+                  <span class="chip">Python</span><span class="chip">Fault Injection</span><span class="chip">CAN Bus</span><span class="chip">Relay Boards</span><span class="chip">OCPP 1.6</span><span class="chip">Webhook Capture</span><span class="chip">Oscilloscope</span><span class="chip">DMM</span>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Result</div>
+                <div class="ct">7 previously unknown firmware defects surfaced. 0 stuck sessions across 3 months of production monitoring post-fix. Recovery matrix adopted as mandatory pre-certification gate for all new charger hardware at AmpUp.</div>
+              </div>
+              <div class="impact-box">
+                <div class="impact-arrow">→</div>
+                <div class="impact-body"><strong>7 firmware bugs caught before production → zero field incidents from these defects.</strong> Fault injection matrix is now a mandatory certification gate for all new hardware.</div>
+              </div>
+              <div class="proj-links">
+                <a class="btn-link" href="https://github.com/phanidatta673/charger-fault-injection-suite" target="_blank">View Repo: charger-fault-injection-suite →</a>
+                <a class="btn-link" href="https://github.com/phanidatta673/charger-fault-injection-suite/blob/main/matrix/scenarios.md" target="_blank">View Test Matrix →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROJECT 04 ── -->
+      <div class="proj">
+        <div class="proj-header">
+          <div class="proj-num">04</div>
+          <div>
+            <div class="proj-headline-row">
+              <span class="proj-name">CTEP Compliance Validation</span>
+              <span class="badge bc">ISO 15118</span>
+            </div>
+            <div class="proj-key-impact">
+              <span class="proj-ki">✓ 11 → 0 failures in 14 days</span>
+              <span class="proj-ki">✓ CTEP certified</span>
+              <span class="proj-ki">✓ CA market unblocked</span>
+            </div>
+            <div class="proj-biz">💡 Pre-audit found 11 failures blocking California market entry → hard certification deadline, no consultants, 2-week window.</div>
+            <div class="proj-meta">AmpUp · 2024 · Certification Engineering</div>
+          </div>
+          <div class="proj-toggle">+</div>
+        </div>
+        <div class="proj-body">
+          <div class="proj-body-inner">
+            <div class="proj-content">
+              <div>
+                <div class="cl">Problem</div>
+                <div class="ct">Pre-certification CTEP audit returned 11 non-conformances blocking California market access. Failures: <strong>metering accuracy windows, session boundary reporting, energy data granularity under ISO 15118 PnC flows</strong> — with a hard deadline and no room to slip.</div>
+              </div>
+              <div>
+                <div class="cl">Approach</div>
+                <div class="ct">
+                  <ul>
+                    <li>Mapped each of 11 failures to CTEP test case IDs + OCPP 2.0.1 message fields</li>
+                    <li>Root cause: meterValue reporting intervals + StopTransaction energy summation</li>
+                    <li>Produced protocol logs, oscilloscope waveforms, regression traces for certifying body</li>
+                    <li>Compliance regression suite integrated into CI — runs on every firmware release</li>
+                  </ul>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Stack</div>
+                <div class="chips">
+                  <span class="chip">CTEP Framework</span><span class="chip">ISO 15118</span><span class="chip">OCPP 2.0.1</span><span class="chip">Python</span><span class="chip">Metering Tools</span><span class="chip">Oscilloscope</span><span class="chip">Protocol Traces</span>
+                </div>
+              </div>
+              <div>
+                <div class="cl">Result</div>
+                <div class="ct">All 11 non-conformances resolved and re-validated in 14 days. CTEP certification passed on resubmission. California market access unblocked. Compliance CI suite prevents future regressions automatically.</div>
+              </div>
+              <div class="impact-box">
+                <div class="impact-arrow">→</div>
+                <div class="impact-body"><strong>11 → 0 compliance failures in 14 days → California market access unlocked.</strong> CTEP certified. Compliance regression runs automatically in CI on every firmware release.</div>
+              </div>
+              <div class="proj-links">
+                <a class="btn-link" href="https://github.com/phanidatta673/ctep-compliance-suite" target="_blank">View Repo: ctep-compliance-suite →</a>
+                <a class="btn-link" href="https://github.com/phanidatta673/ctep-compliance-suite/blob/main/evidence/README.md" target="_blank">View Evidence Package →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     RETOOL + INTERNAL TOOLING — NEW SECTION
+══════════════════════════════════════ -->
+<section class="section" id="tools">
+  <div class="wrap">
+    <div class="eyebrow anim">Internal Tooling</div>
+    <h2 class="h2 anim d1" style="margin-bottom:12px">Retool dashboards &<br><em>automation pipelines</em></h2>
+    <p style="font-size:0.9rem;color:var(--t2);font-weight:300;margin-bottom:36px;max-width:560px" class="anim d2">Beyond test cases — building the internal tools that make quality engineering faster for the entire team.</p>
+
+    <div class="tools-grid anim d3">
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon">📊</div>
+          <span class="tool-badge">Retool</span>
+        </div>
+        <div class="tool-title">Charger Health Dashboard</div>
+        <div class="tool-body">Built a Retool dashboard giving the QA team real-time visibility into charger session health, OCPP message flow status, and backend billing reconciliation across all deployed stations. Replaced manual log-grepping with a searchable, filterable interface.</div>
+        <div class="tool-chips">
+          <span class="tool-chip">Retool</span><span class="tool-chip">PostgreSQL</span><span class="tool-chip">REST API</span><span class="tool-chip">OCPP Logs</span>
+        </div>
+        <div class="tool-impact">→ 3× faster incident triage for field support teams</div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon">⚙️</div>
+          <span class="tool-badge">Python + Shell</span>
+        </div>
+        <div class="tool-title">Automated Log Analyzer</div>
+        <div class="tool-body">Python CLI tool that parses raw OCPP WebSocket logs, extracts session state transitions, flags protocol anomalies, and outputs structured JSON reports. Eliminated hours of manual log analysis per debugging session.</div>
+        <div class="tool-chips">
+          <span class="tool-chip">Python</span><span class="tool-chip">Shell scripting</span><span class="tool-chip">JSON parsing</span><span class="tool-chip">OCPP</span>
+        </div>
+        <div class="tool-impact">→ Log analysis time: hours → &lt;5 minutes per incident</div>
+      </div>
+
+      <div class="tool-card">
+        <div class="tool-card-top">
+          <div class="tool-icon">🔄</div>
+          <span class="tool-badge">Jenkins + Docker</span>
+        </div>
+        <div class="tool-title">Nightly Regression Pipeline</div>
+        <div class="tool-body">Designed and maintained the full CI/CD pipeline for EV charger regression testing — Docker-containerized test environments, parallelized Pytest runs across 5 HIL stations, Allure report publishing, and Slack alerting on test failures.</div>
+        <div class="tool-chips">
+          <span class="tool-chip">Jenkins</span><span class="tool-chip">Docker</span><span class="tool-chip">Pytest</span><span class="tool-chip">Allure</span><span class="tool-chip">Slack API</span>
+        </div>
+        <div class="tool-impact">→ Zero manual test runs — fully automated since Q4 2024</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     SKILLS
+══════════════════════════════════════ -->
+<section class="section" id="skills">
+  <div class="wrap">
+    <div class="eyebrow anim">Technical Skills</div>
+    <h2 class="h2 anim d1" style="margin-bottom:40px">Full-stack quality,<br><em>hardware to cloud</em></h2>
+
+    <div class="skills-wrap anim d2">
+      <div class="skills-nav">
+        <div class="sk-tab active" data-tab="ev"><span class="sk-tab-icon">⚡</span><span class="sk-tab-lbl">EV Protocols</span></div>
+        <div class="sk-tab" data-tab="hw"><span class="sk-tab-icon">🔬</span><span class="sk-tab-lbl">Hardware / Lab</span></div>
+        <div class="sk-tab" data-tab="auto"><span class="sk-tab-icon">🤖</span><span class="sk-tab-lbl">Automation</span></div>
+        <div class="sk-tab" data-tab="api"><span class="sk-tab-icon">🔗</span><span class="sk-tab-lbl">API & Backend</span></div>
+        <div class="sk-tab" data-tab="devops"><span class="sk-tab-icon">🚀</span><span class="sk-tab-lbl">DevOps / CI</span></div>
+        <div class="sk-tab" data-tab="mobile"><span class="sk-tab-icon">📱</span><span class="sk-tab-lbl">Mobile & Web</span></div>
+      </div>
+      <div class="skills-panel">
+        <div class="sk-pane active" id="pane-ev">
+          <div class="sk-pane-title">EV Charging Protocols</div>
+          <div class="sk-pane-desc">Protocol-level expertise — not just test execution but genuine understanding of session lifecycle, metering compliance, and failure modes.</div>
+          <div class="sk-grid">
+            <span class="sk core">OCPP 1.6</span><span class="sk core">OCPP 2.0.1</span><span class="sk core">ISO 15118</span><span class="sk">DIN 70121</span><span class="sk">J1772</span><span class="sk core">CTEP Compliance</span><span class="sk">CHAdeMO</span><span class="sk">Smart Charging</span><span class="sk">Plug & Charge (PnC)</span><span class="sk">RFID Authentication</span><span class="sk">meterValue Validation</span><span class="sk">Session Lifecycle</span><span class="sk">Interoperability Testing</span><span class="sk">Protocol Trace Analysis</span>
+          </div>
+        </div>
+        <div class="sk-pane" id="pane-hw">
+          <div class="sk-pane-title">Hardware & Lab Validation</div>
+          <div class="sk-pane-desc">Hands-on embedded diagnostics — correlating hardware-level signals with cloud transaction data in the same debugging session.</div>
+          <div class="sk-grid">
+            <span class="sk core">HIL Testing</span><span class="sk core">SIL Testing</span><span class="sk core">CAN Bus Analysis</span><span class="sk">Oscilloscope</span><span class="sk">DMM</span><span class="sk">Power Analyzers</span><span class="sk">Relay Board Control</span><span class="sk core">Fault Injection</span><span class="sk">Embedded Firmware Testing</span><span class="sk">BMS Signal Validation</span><span class="sk">HV Charging Characterization</span><span class="sk">Lab Bench Setup</span><span class="sk">Vehicle-Level Testing</span><span class="sk">Metering Accuracy</span>
+          </div>
+        </div>
+        <div class="sk-pane" id="pane-auto">
+          <div class="sk-pane-title">Test Automation</div>
+          <div class="sk-pane-desc">Building platforms others build on — not scripts, but test infrastructure that compounds in value with every release.</div>
+          <div class="sk-grid">
+            <span class="sk core">Python</span><span class="sk core">Pytest</span><span class="sk">Java</span><span class="sk">Selenium WebDriver</span><span class="sk">Playwright</span><span class="sk">Cypress</span><span class="sk">Cucumber BDD</span><span class="sk">TestNG</span><span class="sk">JUnit</span><span class="sk">Robot Framework</span><span class="sk">Page Object Model</span><span class="sk">Data-Driven Testing</span><span class="sk">Parallel Execution</span><span class="sk">Allure Reports</span><span class="sk">Tosca L1 + L2</span>
+          </div>
+        </div>
+        <div class="sk-pane" id="pane-api">
+          <div class="sk-pane-title">API & Backend Testing</div>
+          <div class="sk-pane-desc">From OCPP WebSocket payloads to REST billing APIs — validating the entire data layer end to end.</div>
+          <div class="sk-grid">
+            <span class="sk core">REST Assured</span><span class="sk">Postman</span><span class="sk">GraphQL</span><span class="sk">SoapUI</span><span class="sk">JMeter</span><span class="sk">LoadRunner</span><span class="sk">Webhook Validation</span><span class="sk">WebSocket Testing</span><span class="sk">PostgreSQL</span><span class="sk">MySQL</span><span class="sk">MongoDB</span><span class="sk">Snowflake</span><span class="sk">Redis</span><span class="sk">Log Analysis</span>
+          </div>
+        </div>
+        <div class="sk-pane" id="pane-devops">
+          <div class="sk-pane-title">DevOps & CI/CD</div>
+          <div class="sk-pane-desc">Quality gates that run automatically on every commit — integrated into the full software delivery lifecycle.</div>
+          <div class="sk-grid">
+            <span class="sk core">Jenkins</span><span class="sk">GitHub Actions</span><span class="sk">GitLab CI</span><span class="sk">CircleCI</span><span class="sk">Docker</span><span class="sk">Kubernetes</span><span class="sk">Terraform</span><span class="sk">AWS</span><span class="sk">Azure</span><span class="sk">GCP</span><span class="sk">Git / Bitbucket</span><span class="sk">Jira</span><span class="sk">TestRail</span><span class="sk">Splunk</span>
+          </div>
+        </div>
+        <div class="sk-pane" id="pane-mobile">
+          <div class="sk-pane-title">Mobile & Web Testing</div>
+          <div class="sk-pane-desc">End-to-end coverage across Android and iOS EV driver apps, operator dashboards, and responsive web interfaces.</div>
+          <div class="sk-grid">
+            <span class="sk core">Appium</span><span class="sk">BrowserStack</span><span class="sk">Android Automation</span><span class="sk">iOS Automation</span><span class="sk">Cross-Browser Testing</span><span class="sk">Responsive UI Validation</span><span class="sk">JavaScript</span><span class="sk">HTML5 / CSS</span><span class="sk">C#</span><span class="sk">Shell Scripting</span><span class="sk core">Retool</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     EXPERIENCE
+══════════════════════════════════════ -->
+<section class="section" id="experience">
+  <div class="wrap">
+    <div class="eyebrow anim">Experience</div>
+    <h2 class="h2 anim d1" style="margin-bottom:40px">Where I've<br><em>built things</em></h2>
+
+    <div class="exp-list">
+      <div class="exp-card anim d1">
+        <div class="exp-top">
+          <div>
+            <div class="exp-co">AmpUp</div>
+            <div class="exp-role">Hardware & Software Quality Engineer</div>
+          </div>
+          <div class="exp-period">Oct 2024 – Present<br>USA · EV Charging</div>
+        </div>
+        <ul class="exp-buls">
+          <li>Owns end-to-end integration validation across <strong>firmware, charger UI, backend APIs, and network layers</strong> — protocol-driven go/no-go gates before each production rollout across multi-vendor OCPP deployments.</li>
+          <li>Built Python + Pytest HIL automation framework scaling charger validation <strong>from 1 → 5 simultaneous stations</strong>, compressing 2-week manual regression to 3 automated days (5× throughput, faster release cycles).</li>
+          <li>Led CTEP compliance remediation: <strong>11 non-conformances → 0 in 14 days</strong> — California market access unblocked; compliance CI suite prevents future regressions.</li>
+          <li>Hands-on embedded diagnostics via <strong>oscilloscope, DMM, and CAN bus analyzers</strong> — correlating hardware-level signals with backend transaction records to confirm root causes without guesswork.</li>
+          <li>Designed 40-scenario fault-injection matrix surfacing <strong>7 previously unknown firmware defects before field deployment</strong> — zero field incidents from those defects post-fix.</li>
+          <li>Maintained <strong>95% release sign-off rate</strong> across all Agile sprint cycles; built Retool dashboards for real-time charger health visibility across the QA team.</li>
+        </ul>
+      </div>
+
+      <div class="exp-card anim d2">
+        <div class="exp-top">
+          <div>
+            <div class="exp-co">Infosys Limited</div>
+            <div class="exp-role">Automation Test Engineer</div>
+          </div>
+          <div class="exp-period">Jul 2021 – Dec 2022<br>India · Enterprise</div>
+        </div>
+        <ul class="exp-buls">
+          <li>Developed Cucumber BDD regression suites in Java — <strong>100+ automated scenarios, coverage +45%, manual effort −50%</strong> per sprint.</li>
+          <li>REST/SOAP API validation workflows — <strong>staging API failures reduced by 40%</strong> via early interface stability checks across JSON/XML services.</li>
+          <li>Integrated automation into <strong>Jenkins CI for nightly execution — 3× run frequency</strong>, tighter quality feedback loop for engineering teams.</li>
+          <li>Led Appium mobile automation for iOS + Android — <strong>release cycle efficiency +20%</strong> across 25+ validated regression flows.</li>
+          <li>LoadRunner performance scripts simulating <strong>1,000+ concurrent users</strong> — backend reliability confirmed at production scale.</li>
+        </ul>
+      </div>
+
+      <div class="exp-card anim d3">
+        <div class="exp-top">
+          <div>
+            <div class="exp-co">Sigma Info Tech</div>
+            <div class="exp-role">QA Engineer</div>
+          </div>
+          <div class="exp-period">Jul 2018 – Jun 2021<br>India</div>
+        </div>
+        <ul class="exp-buls">
+          <li>Built scalable Page Object Model framework with Maven + Jenkins — <strong>maintenance overhead −35%</strong>, unattended nightly CI from day one.</li>
+          <li>200+ manual and exploratory test cases across <strong>10+ Agile sprints</strong> — consistent release readiness, zero missed critical defects at UAT.</li>
+          <li>50+ Appium scripts for iOS + Android — <strong>mobile test execution speed +30%</strong>.</li>
+          <li>Standardized Selenium suite on Robot Framework — eliminated script duplication, <strong>new engineer onboarding −30%</strong> faster.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══════════════════════════════════════
+     CONTACT
+══════════════════════════════════════ -->
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="contact-wrap">
+      <div class="anim">
+        <div class="eyebrow" style="margin-bottom:18px">Contact</div>
+        <h2 class="contact-h">Let's build what<br><em>doesn't fail.</em></h2>
+        <p class="contact-body">Looking for senior QA engineering roles where quality is a first-class discipline — EV charging infrastructure, autonomous systems, or FAANG-scale platforms. Based in Hartford, CT. Open to remote and hybrid.</p>
+        <a class="btn btn-p" href="mailto:dattaphani899@gmail.com">Start a conversation →</a>
+      </div>
+      <div class="anim d2">
+        <div class="clinks">
+          <a class="clink" href="mailto:dattaphani899@gmail.com">
+            <div class="clink-l"><div class="clink-ico">✉</div><div><div class="clink-name">Email</div><div class="clink-val">dattaphani899@gmail.com</div></div></div>
+            <span class="clink-arr">→</span>
+          </a>
+          <a class="clink" href="https://www.linkedin.com/in/phanidatta/" target="_blank">
+            <div class="clink-l"><div class="clink-ico" style="font-size:0.72rem;font-weight:600">in</div><div><div class="clink-name">LinkedIn</div><div class="clink-val">linkedin.com/in/phanidatta</div></div></div>
+            <span class="clink-arr">→</span>
+          </a>
+          <a class="clink" href="tel:+19134088775">
+            <div class="clink-l"><div class="clink-ico">📞</div><div><div class="clink-name">Phone</div><div class="clink-val">+1 913 408 8775</div></div></div>
+            <span class="clink-arr">→</span>
+          </a>
+          <a class="clink" href="https://github.com/phanidatta673" target="_blank">
+            <div class="clink-l"><div class="clink-ico" style="font-size:0.82rem">⌥</div><div><div class="clink-name">GitHub</div><div class="clink-val">github.com/phanidatta673</div></div></div>
+            <span class="clink-arr">→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span class="mono-sm">© 2025 Phani Datta · Hartford, CT</span>
+    <span class="mono-sm">Senior QA Engineer · EV Charging · OCPP · System Validation</span>
+    <span class="mono-sm">dattaphani899@gmail.com</span>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════ -->
+<script>
+/* ── SCROLL REVEAL ── */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, { threshold: 0.07, rootMargin: '0px 0px -24px 0px' });
+document.querySelectorAll('.anim').forEach(el => io.observe(el));
+
+/* ── PROJECT ACCORDION ── */
+document.querySelectorAll('.proj').forEach(proj => {
+  proj.querySelector('.proj-header').addEventListener('click', () => {
+    const isOpen = proj.classList.contains('open');
+    document.querySelectorAll('.proj').forEach(p => p.classList.remove('open'));
+    if (!isOpen) proj.classList.add('open');
+  });
+});
+
+/* ── SKILLS TABS ── */
+document.querySelectorAll('.sk-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const key = tab.dataset.tab;
+    document.querySelectorAll('.sk-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.sk-pane').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    const pane = document.getElementById('pane-' + key);
+    if (pane) {
+      pane.classList.add('active');
+      pane.querySelectorAll('.sk').forEach((el, i) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(6px)';
+        setTimeout(() => {
+          el.style.transition = 'opacity 250ms ease, transform 250ms ease';
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, i * 14);
+      });
+    }
+  });
+});
+
+/* ── COUNTER ANIMATION ── */
+function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+const cio = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = parseFloat(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    if (isNaN(target)) { cio.unobserve(el); return; }
+    const dur = 1300;
+    const start = performance.now();
+    (function tick(now) {
+      const p = Math.min((now - start) / dur, 1);
+      el.textContent = Math.round(easeOut(p) * target) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    })(start);
+    cio.unobserve(el);
+  });
+}, { threshold: 0.6 });
+document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
+
+/* ── NAV SCROLL SHRINK ── */
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  nav.style.height = window.scrollY > 60 ? '50px' : '';
+}, { passive: true });
+</script>
+</body>
+</html>
